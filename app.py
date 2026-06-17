@@ -103,8 +103,7 @@ else:
 
         st.sidebar.success(f"Removed `{delete_med}` from records.")
         st.rerun()
-
-else:
+    else:
     st.sidebar.info("Add medicines to the inventory first.")
 
 
