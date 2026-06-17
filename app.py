@@ -89,6 +89,23 @@ if not st.session_state.inventory.empty:
         st.sidebar.info("No active medicine stock available to consume.")
 else:
     st.sidebar.info("Add medicines to the inventory first.")
+    # --- 2. Delete Medicine Record ---
+    st.sidebar.subheader("🗑️ Delete Medicine Record")
+    delete_med = st.sidebar.selectbox(
+        "Select medicine to remove completely:", all_meds, key="delete_select"
+    )
+
+    if st.sidebar.button("Delete from Inventory", type="primary", key="delete_btn"):
+        # Filter out the selected medicine row
+        st.session_state.inventory = st.session_state.inventory[
+            st.session_state.inventory["Name"] != delete_med
+        ].reset_index(drop=True)
+
+        st.sidebar.success(f"Removed `{delete_med}` from records.")
+        st.rerun()
+
+else:
+    st.sidebar.info("Add medicines to the inventory first.")
 
 
 # --- Main Content: Add New Medicine Form ---
