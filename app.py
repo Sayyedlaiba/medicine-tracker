@@ -11,6 +11,10 @@ st.write("Keep track of your medicines, expiration dates, and stock levels effor
 # --- Session State Initialization ---
 if "inventory" not in st.session_state:
     # Starting with some sample data
+    # Right before st.dataframe(), verify you are copying from session_state
+if not st.session_state.inventory.empty:
+    display_df = st.session_state.inventory.copy()
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
     st.session_state.inventory = pd.DataFrame(
         [
             {
