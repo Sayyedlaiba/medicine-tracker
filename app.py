@@ -18,7 +18,7 @@ if "inventory" not in st.session_state:
                 "Name": "mahagesic-P",
                 "Uses": "Fever, Pain relief, Inflammation",
                 "Expiry Date": datetime.date(2026, 10, 1),
-                "Quantity": 6,
+                "Quantity": 7,
             }
         ]
     )
