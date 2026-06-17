@@ -9,12 +9,9 @@ st.title("💊 Medicine Inventory Tracker")
 st.write("Keep track of your medicines, expiration dates, and stock levels effortlessly.")
 
 # --- Session State Initialization ---
+# This ensures our data persists while the user interacts with the app
 if "inventory" not in st.session_state:
-    # Starting with some sample data
-    # Right before st.dataframe(), verify you are copying from session_state
-if not st.session_state.inventory.empty:
-    display_df = st.session_state.inventory.copy()
-    st.dataframe(display_df, use_container_width=True, hide_index=True)
+    # Everything below this line MUST be indented by 4 spaces
     st.session_state.inventory = pd.DataFrame(
         [
             {
@@ -31,7 +28,6 @@ if not st.session_state.inventory.empty:
             },
         ]
     )
-
 # --- Expiry & Depletion Alerts ---
 today = datetime.date.today()
 expired_medicines = []
