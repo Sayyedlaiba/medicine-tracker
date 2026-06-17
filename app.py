@@ -104,7 +104,7 @@ else:
         st.sidebar.success(f"Removed `{delete_med}` from records.")
         st.rerun()
     else:
-    st.sidebar.info("Add medicines to the inventory first.")
+        st.sidebar.info("Add medicines to the inventory first.")
 
 
 # --- Main Content: Add New Medicine Form ---
