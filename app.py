@@ -15,17 +15,11 @@ if "inventory" not in st.session_state:
     st.session_state.inventory = pd.DataFrame(
         [
             {
-                "Name": "Paracetamol",
-                "Uses": "Fever and Pain relief",
-                "Expiry Date": datetime.date(2026, 8, 20),
-                "Quantity": 15,
-            },
-            {
-                "Name": "Vitamin C",
-                "Uses": "Immunity booster",
-                "Expiry Date": datetime.date(2025, 12, 1),
-                "Quantity": 2,
-            },
+                "Name": "mahagesic-P",
+                "Uses": "Fever, Pain relief, Inflammation",
+                "Expiry Date": datetime.date(2026, 10, 1),
+                "Quantity": 6,
+            }
         ]
     )
 
