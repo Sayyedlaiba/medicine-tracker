@@ -9,7 +9,6 @@ st.title("💊 Medicine Inventory Tracker")
 st.write("Keep track of your medicines, expiration dates, and stock levels effortlessly.")
 
 # --- Session State Initialization ---
-# This ensures our data persists while the user interacts with the app
 if "inventory" not in st.session_state:
     # Starting with some sample data
     st.session_state.inventory = pd.DataFrame(
@@ -55,31 +54,30 @@ if finished_medicines:
 
 
 # --- Layout: Sidebar and Main Content ---
-# Sidebar for logging medicine consumption
-st.sidebar.header("Log Consumed Medicine")
+st.sidebar.header("Actions Panel")
 
 if not st.session_state.inventory.empty:
-    # Filter out already empty medicines so user doesn't log negative quantities
+    all_meds = st.session_state.inventory["Name"].tolist()
     available_meds = st.session_state.inventory[
         st.session_state.inventory["Quantity"] > 0
     ]["Name"].tolist()
 
+    # --- 1. Log Consumed Medicine ---
+    st.sidebar.subheader("Log Consumed Medicine")
     if available_meds:
         selected_med = st.sidebar.selectbox(
-            "Which medicine did you take?", available_meds
+            "Which medicine did you take?", available_meds, key="consume_select"
         )
         take_quantity = st.sidebar.number_input(
-            "Quantity taken", min_value=1, value=1, step=1
+            "Quantity taken", min_value=1, value=1, step=1, key="consume_qty"
         )
 
-        if st.sidebar.button("Update Inventory"):
-            # Find the row index and deduct the quantity
+        if st.sidebar.button("Update Inventory", key="consume_btn"):
             idx = st.session_state.inventory[
                 st.session_state.inventory["Name"] == selected_med
             ].index[0]
             current_qty = st.session_state.inventory.at[idx, "Quantity"]
 
-            # Ensure we don't drop below 0 unexpectedly
             new_qty = max(0, current_qty - take_quantity)
             st.session_state.inventory.at[idx, "Quantity"] = new_qty
 
@@ -87,69 +85,17 @@ if not st.session_state.inventory.empty:
             st.rerun()
     else:
         st.sidebar.info("No active medicine stock available to consume.")
-else:
-    st.sidebar.info("Add medicines to the inventory first.")
 
+    st.sidebar.markdown("---")
 
-# --- Main Content: Add New Medicine Form ---
-with st.expander("➕ Add New Medicine to Inventory", expanded=True):
-    with st.form("medicine_form", clear_on_submit=True):
-        col1, col2 = st.columns(2)
-
-        with col1:
-            med_name = st.text_input("Medicine Name").strip()
-            med_uses = st.text_input("Uses / Purpose")
-
-        with col2:
-            med_expiry = st.date_input("Expiry Date", min_value=today)
-            med_qty = st.number_input(
-                "Quantity (Strips/Tablets)", min_value=1, step=1, value=10
-            )
-
-        submit_btn = st.form_submit_button("Add Medicine")
-
-        if submit_btn:
-            if med_name:
-                # Check if medicine already exists to avoid duplicates
-                if (
-                    med_name.lower()
-                    in st.session_state.inventory["Name"].str.lower().values
-                ):
-                    st.error(
-                        f"'{med_name}' already exists in the table. Update it or use a different name."
-                    )
-                else:
-                    # Append new data row
-                    new_row = pd.DataFrame(
-                        [
-                            {
-                                "Name": med_name,
-                                "Uses": med_uses,
-                                "Expiry Date": med_expiry,
-                                "Quantity": med_qty,
-                            }
-                        ]
-                    )
-                    st.session_state.inventory = pd.concat(
-                        [st.session_state.inventory, new_row], ignore_index=True
-                    )
-                    st.success(f"Successfully added {med_name}!")
-                    st.rerun()
-            else:
-                st.error("Please enter a valid medicine name.")
-
-
-# --- Main Content: Display Current Inventory ---
-st.subheader("📋 Current Medicine Stock")
-
-if not st.session_state.inventory.empty:
-    # Formatting the display table nicely
-    display_df = st.session_state.inventory.copy()
-    display_df["Expiry Date"] = display_df["Expiry Date"].apply(
-        lambda x: x.strftime("%Y-%m-%d")
+    # --- 2. Delete Medicine Record ---
+    st.sidebar.subheader("🗑️ Delete Medicine Record")
+    delete_med = st.sidebar.selectbox(
+        "Select medicine to remove completely:", all_meds, key="delete_select"
     )
 
-    # Display using Streamlit's native interactive data frame
-    st.dataframe(display_df, use_container_width=True, hide_index=True)
-else:
-    st.info("Your inventory is currently empty.")
+    if st.sidebar.button("Delete from Inventory", type="primary", key="delete_btn"):
+        # Filter out the selected medicine row
+        st.session_state.inventory = st.session_state.inventory[
+            st.session_state.inventory["Name"] != delete_med
+        ].reset_index(drop=True)
